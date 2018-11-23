@@ -1,0 +1,35 @@
+﻿@model IEnumerable<_20_MVC_Assignment_1_DOTNET.Models.HomeModel>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+<script src="~/Scripts/Script/Twitt.js"></script>
+<div class="row">
+    <div class="col-md-2 sidenav">
+        <br />
+        <br />
+        <br />
+        <br />
+        <div class="col-md-12"><span class="control-label">Follow</span></div>
+        <div class="col-md-12"><input type="text" class="form-control" /></div>
+        <br />
+        <br />
+        <div class="col-md-12"><span class="badge badge-light" id="totTweets"></span><span class="control-label">Tweets</span></div>
+        <div class="col-md-12"><span class="badge badge-light" id="totFollowing"></span><span class="control-label">Following</span></div>
+        <div class="col-md-12"><span class="badge badge-light" id="totFollowers"></span><span class="control-label">Followers</span></div>
+
+    </div>
+</div>
+<div class="row main">
+    <div class="col-md-10">
+        <div class="col-md-12"><span class="control-label">What are you doing?</span></div>
+        <div class="col-md-12"><textarea class="form-control" id="txtMessage"></textarea> </div>
+        <div class="col-md-12"><button class="btn btn-primary" id="btnTwitt"> Update </button></div>
+    </div>
+    <br />
+    <br />
+    <div class="col-md-10">
+        <div class="col-md-12"><span class="control-label">Tweets</span></div>
+        <br />
+        <table id="tblTweets" class="table">
+            <tbody id="tblEmployeetbody"></tbody>
+        </table>
+    </div>
+</div>
