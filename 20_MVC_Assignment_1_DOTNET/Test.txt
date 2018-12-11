@@ -1,0 +1,255 @@
+<!--The content below is only a placeholder and can be replaced.-->
+<nav class="navbar navbar-default navbar-blue">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand white-font" href="#">Task Manager</a>
+    </div>
+    <ul class="nav navbar-nav white-font">
+      <li>
+        <a class="white-font" routerLink="/addTask">Add Task</a>
+      </li>
+      <li>
+        <a class="white-font" routerLink="/viewTask">View Task</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+<div class="container-fluid app-padding">
+  <router-outlet></router-outlet>
+</div>
+
+<div class="row">
+  <div class="col-md-2"></div>
+  <div class="col-md-8">
+      <div class="page-header">Add Task</div>
+      <form class="form-horizontal" [formGroup]="taskForm" (ngSubmit)="addTask()" #formDir="ngForm" novalidate>
+          <div class="form-group">
+            <label class="control-label col-sm-2" for="taskName">Task:</label>
+            <div class="col-sm-6">
+              <input type="text" class="form-control" name="taskName" placeholder="Enter Task Name" formControlName="taskName" required>
+              <span class="text-danger" *ngIf="taskName.invalid && formDir.submitted">
+                Name is required.
+              </span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-sm-2" for="priority">Priority:</label>
+            <div class="col-sm-6">
+              <input type="text" class="form-control" name="priority" placeholder="Enter Priority" formControlName="priority" required>
+              <span class="text-danger" *ngIf="priority.invalid && formDir.submitted">
+                Priority is required and should be numeric with not more than 8 digits.
+              </span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-sm-2" for="parentTask">Parent Task:</label>
+            <div class="col-sm-6">
+              <select class="form-control" name="parentTask" formControlName="parentTask">
+                <option *ngFor="let task of tasks" value={{task.TaskId}}>{{task.TaskName}}</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-sm-2" for="startDate">Start Date:</label>
+            <div class="col-sm-10">
+              <ng-datepicker [options]="dateOptions" name="startDate" formControlName="startDate"></ng-datepicker>
+              <span class="text-danger" *ngIf="startDate.invalid && formDir.submitted">
+                Start date is required.
+              </span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-sm-2" for="endDate">End Date:</label>
+            <div class="col-sm-10">
+              <ng-datepicker [options]="dateOptions" name="endDate" formControlName="endDate"></ng-datepicker>
+              <span class="text-danger" *ngIf="endDate.invalid && formDir.submitted">
+                End date is required.
+              </span>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+              <div class="text-danger bottom-margin-10" *ngIf="error.isError && formDir.submitted">
+                {{error.errorMessage}}
+              </div>
+              <div class="bottom-margin-10" *ngIf="loading">
+                Processing... Please wait...
+              </div>
+              <div>
+                <button type="submit" class="btn btn-success right-margin-10">Add Task</button>
+                <input type="button" class="btn btn-danger" (click)="reset(formDir)" value="Reset" />
+              </div>
+            </div>
+          </div>
+        </form>
+  </div>
+  <div class="col-md-2"></div>
+</div>
+
+<div class="row">
+  <div class="page-header">View Tasks</div>
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <b>Search Criteria</b>
+    </div>
+    <div class="panel-body">
+      <div class="row">
+        <div class="form-group">
+          <div class="col-sm-1 zero-padding">
+            <label class="adjust-float">Task:</label>
+          </div>
+          <div class="col-sm-5">
+            <input class="form-control" type="text" [(ngModel)]="taskTerm" />
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-sm-1 zero-padding">
+            <label class="adjust-float">Parent Task:</label>
+          </div>
+          <div class="col-sm-5">
+            <input class="form-control" type="text" [(ngModel)]="parentTerm" />
+          </div>
+        </div>
+      </div>
+      <br />
+      <div class="row">
+        <div class="col-sm-1 zero-padding">
+          <label class="adjust-float">Priority From:</label>
+        </div>
+        <div class="col-sm-2">
+          <input class="form-control" type="text" [(ngModel)]="priorityFrom" />
+        </div>
+        <div class="col-sm-1">
+          <label class="adjust-float">Priority To:</label>
+        </div>
+        <div class="col-sm-2">
+          <input class="form-control" type="text" [(ngModel)]="priorityTo" />
+        </div>
+        <div class="col-sm-1">
+          <label class="adjust-float">Start Date:</label>
+        </div>
+        <div class="col-sm-2">
+          <input class="form-control" type="text" [(ngModel)]="strtDtTerm" />
+        </div>
+        <div class="col-sm-1 zero-padding">
+          <label class="adjust-float">End Date:</label>
+        </div>
+        <div class="col-sm-2">
+          <input class="form-control" type="text" [(ngModel)]="endDtTerm" />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row" *ngIf="loading">
+  <div class="alert alert-danger">Processing please wait...</div>
+</div>
+<div class="row">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <b>Tasks</b>
+    </div>
+    <div class="panel-body">
+      <table class="table table-bordered table-responsive table-condensed">
+        <thead class="light-blue">
+          <tr>
+            <th>Task</th>
+            <th>Parent</th>
+            <th>Priority</th>
+            <th>Start</th>
+            <th>End</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let task of tasks | filter : { TaskName : taskTerm, 
+                            ParentName: parentTerm, 
+                            StartDate: strtDtTerm,
+                            EndDate: endDtTerm } : priorityFrom : priorityTo">
+            <td>{{task.TaskName}}</td>
+            <td>{{task.ParentName}}</td>
+            <td>{{task.Priority}}</td>
+            <td>{{task.StartDate | date: 'MM/dd/yyyy'}}</td>
+            <td>{{task.EndDate | date: 'MM/dd/yyyy'}}</td>
+            <td>
+              <span *ngIf="task.ActiveInd === 'Y'">
+                <button class="btn btn-primary right-margin-10" [routerLink]="['/editTask', task.TaskId]">Edit</button>
+                <button class="btn btn-danger" (click)="endTask(task.TaskId)">End Task</button>
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-2"></div>
+  <div class="col-md-8">
+      <div class="page-header">Edit Task</div>
+      <form class="form-horizontal" [formGroup]="taskForm" (ngSubmit)="updateTask()" #formDir="ngForm" novalidate>
+          <div class="form-group">
+            <label class="control-label col-sm-2" for="taskName">Task:</label>
+            <div class="col-sm-6">
+              <input type="text" class="form-control" name="taskName" placeholder="Enter Task Name" formControlName="taskName" required>
+              <span class="text-danger" *ngIf="taskName.invalid && formDir.submitted">
+                Name is required.
+              </span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-sm-2" for="priority">Priority:</label>
+            <div class="col-sm-6">
+              <input type="text" class="form-control" name="priority" placeholder="Enter Priority" formControlName="priority" required>
+              <span class="text-danger" *ngIf="priority.invalid && formDir.submitted">
+                Priority is required and should be numeric with not more than 8 digits.
+              </span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-sm-2" for="parentTask">Parent Task:</label>
+            <div class="col-sm-6">
+              <select class="form-control" name="parentTask" formControlName="parentTask">
+                <option *ngFor="let task of parentTasks" value={{task.TaskId}}>{{task.TaskName}}</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-sm-2" for="startDate">Start Date:</label>
+            <div class="col-sm-10">
+              <ng-datepicker [options]="dateOptions" name="startDate" formControlName="startDate"></ng-datepicker>
+              <span class="text-danger" *ngIf="startDate.invalid && formDir.submitted">
+                Start date is required.
+              </span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-sm-2" for="endDate">End Date:</label>
+            <div class="col-sm-10">
+              <ng-datepicker [options]="dateOptions" name="endDate" formControlName="endDate"></ng-datepicker>
+              <span class="text-danger" *ngIf="endDate.invalid && formDir.submitted">
+                End date is required.
+              </span>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+              <div class="text-danger bottom-margin-10" *ngIf="error.isError && formDir.submitted">
+                {{error.errorMessage}}
+              </div>
+              <div class="bottom-margin-10" *ngIf="loading">
+                Processing... Please wait...
+              </div>
+              <div>
+                <button type="submit" class="btn btn-success right-margin-10">Update Task</button>
+                <input type="button" class="btn btn-danger right-margin-10" (click)="reset(formDir)" value="Reset" />
+                <input type="button" class="btn btn-warning" (click)="cancel()" value="Cancel" />
+              </div>
+            </div>
+          </div>
+        </form>
+  </div>
+  <div class="col-md-2"></div>
+</div>
+
